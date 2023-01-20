@@ -13,6 +13,12 @@ outline:
 border:
 */
 } 
+
+button:hover{
+  opacity: 0.8;
+  cursor: pointer;
+}
+
 img{
     width:50px;
     height:50px;
@@ -56,4 +62,7 @@ div{
 }                             /*edited end*/
 .opacity{
     opacity:0.4;
+}
+.opacity:hover{
+  opacity:0.3;
 }
