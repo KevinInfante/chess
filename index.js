@@ -16,7 +16,7 @@ ROADMAP  1/10/23
     -this function will be triggered when the first position is clicked (or
     after reading the coordinates of the first input), then the second pair of
     coordinates will be searched for in the array of valid moves.
-*note: I haven't implemented en passent, or castling, or king not moving into check
+*note: I haven't implemented en passent, promotion, castling, king respond to check
 ✔implement turn
 ✔implement captures (should do this before valid moves?)
 ✔implement game end once king is captured
@@ -24,7 +24,7 @@ ROADMAP  1/10/23
 
 ✔consider: make it so log and turn don't get updated when editor mode is on
 -implement checks
--implement responsive screen size
+(✔kinda)implement responsive screen size
 -implement better ui, that explains how to play
 
 */
@@ -369,7 +369,7 @@ function getValidMoves(piece){ //gets the valid moves of a piece, adds
     piece.vMoves=[]; //consider doing stuff before whiping vMoves.
     //e.g. col could be 'e' and row could be 4
     switch(piece.name){
-        case "Pawn": //
+        case "Pawn": //bug where h pawns can disappear to the 'i' file./// (fixed with isNaN())
             var num;
             if(piece.color==="white"){//i could probably shorten this to one line
                num=1;
@@ -383,14 +383,14 @@ function getValidMoves(piece){ //gets the valid moves of a piece, adds
                      if(findPiece(row+(num*2), col)==0){//if in inital position, checks 2 spaces in front
                          piece.vMoves.push(col+(row+(num*2)));
                      }
-                }
-            }
-            if(findPiece(row+num, String.fromCharCode(col.charCodeAt(0)+1))!=0){ //checks right diagonal
+                }    
+            } // isNaN// "is not a number" checks to make sure findPiece doesn't return  0 or -1
+            if(isNaN(findPiece(row+num, String.fromCharCode(col.charCodeAt(0)+1)))){ //checks right diagonal
                 if(findPiece(row+num, String.fromCharCode(col.charCodeAt(0)+1)).color!=piece.color){
                     piece.vMoves.push(String.fromCharCode(col.charCodeAt(0)+1)+(row+num));
                 }
             }
-            if(findPiece(row+num, String.fromCharCode(col.charCodeAt(0)-1))!=0){ //checks left diagonal
+            if(isNaN(findPiece(row+num, String.fromCharCode(col.charCodeAt(0)-1)))){ //checks left diagonal
                 if(findPiece(row+num, String.fromCharCode(col.charCodeAt(0)-1)).color!=piece.color){
                     piece.vMoves.push(String.fromCharCode(col.charCodeAt(0)-1)+(row+num));
                 }
