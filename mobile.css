@@ -1,0 +1,61 @@
+body{
+    margin: auto; /*top/bottom, left/right*/
+    background-color: black;
+    font-family:"Verdana", sans-serif;
+    text-align: center;
+}
+h1{
+    color:white;
+}
+button{ 
+    font-size: inherit;/*the purpose of this is to remove the spaces between the buttons*/
+    margin:0;
+    padding:0;
+} 
+
+button:hover{
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+img{
+    width:50px;
+}
+.lightsquare{ 
+    background-color:rgb(227,140,83);
+}
+.darksquare{
+    background-color: rgb(136,0,21);
+}
+div{
+    font-size:0; /*the purpose of this is to remove the spaces between the buttons*/
+    display: inline-block;
+}
+.test{
+  display:none;
+  height: 400px;
+  position: absolute;
+  right: 0%; /*edited start*/
+  top:19%; /*edited*/
+}
+
+.board{               /*edited*/
+  margin:auto;
+}
+
+.test2{ /*edited*/
+  display:none;
+  font-size: 24px;
+  position:absolute;
+  width: 40%; /*this seemingly doesn't effect anything*/
+  height:58%; /*this seemingly doesn't effect anything*/
+  left:5.5%;
+  top:18%;
+  padding-left:2%;
+}                        
+.opacity{
+    opacity:0.4;
+}
+.opacity:hover{
+  opacity:0.3;
+}

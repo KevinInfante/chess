@@ -22,9 +22,9 @@ ROADMAP  1/10/23
 ✔implement game end once king is captured
 1/20/23
 
--consider: make it so log and turn don't get updated when editor mode is on
+✔consider: make it so log and turn don't get updated when editor mode is on
 -implement checks
--implement responsice screen size
+-implement responsive screen size
 -implement better ui, that explains how to play
 
 */
@@ -73,10 +73,6 @@ function Piece(color, name, icon, rows, cols){
     this.icon = icon;
     this.rows =rows;
     this.cols = cols;
-    this.move= { 
-        row: 0,
-        col: '',
-    }
     this.vMoves = []; //"valid moves"
     this.highlight=false;
 }
@@ -205,20 +201,19 @@ function translate(colRowStr){// translates "e2" to "46" and vice versa
 function findPiece(a, b){ //row ,col. This function returns piece at (row, col)
     /* finds piece at coordinates a, b, assuming a is a row (number) and 
        b is a column (letter), e.g. 4e */
-       //if(translate(b+a).length>2) return -1; //this could be dangerous
        if(isNaN(b)){
         b=translate(b+a).charAt(0);
         a=translate(b+a).charAt(1);
        }
         if(a>7 || a<0 ||b>7 || b<0){ //extra safety measures
-            return -1; //consider, return -1 if pos doesn't exist, 0 if empty spot
+            return -1; //return -1 if position doesn't exist
         }
         for(let i=0; i<pieces.length; i++){
             if(pieces[i].cols==b && pieces[i].rows==a){
                 return pieces[i];
             }
         }
-        return 0; //if piece not found at (a, b)
+        return 0; //return 0 if position (a, b) is empty
 }
 
 function moveByClick(id){ 
@@ -294,20 +289,21 @@ function movePiece(a, b, x, y){//row, col, row, col
             $('#'+y+x).html("<img src=\"images/"+curPiece.color+'-'+curPiece.name+".png\" alt=\"&square;\">");
         }
 
+        //the statements below check if there is already a piece on (x, y), then captures
         let str1=" moves from ";
         let str2=" to ";
         let captured = findPiece(x, y); //findPiece returns the object, I need its index
         if(captured!=0 && captured!=-1){ //not empty && exists, which means there is a piece
             for(let i=0; i<pieces.length; i++){
                 if(pieces[i]===captured){
-                    if(captured.name=="King"){
+                    if(captured.name=="King"){ //if captured piece is a king, then game over
                         str2=" captures the king on "
                         gameover=true;
                     }
                     else{
                         str2=" captures on ";
                     }
-                    pieces.splice(i, 1); //removes the piece previously from the array
+                    pieces.splice(i, 1); //removes the captured piece from the array
                     str1=" from ";
                 }
             }
@@ -340,7 +336,7 @@ function movePiece(a, b, x, y){//row, col, row, col
             $("textarea").val(log); //consider changing the line hight of texarea
             $("textarea").scrollTop($("textarea")[0].scrollHeight);
         }
-    } //else, issue some kind of "invalid input"
+    } //else, issue some kind of "invalid input"///
 }
 
 function getValidMoves(piece){ //gets the valid moves of a piece, adds
@@ -381,46 +377,46 @@ function getValidMoves(piece){ //gets the valid moves of a piece, adds
         break;
 
         case "Knight":
-            if(r-2>-1 && c+1<8){//this should be redundant, considering the next line
+            if(r-2>-1 && c+1<8){//this if staement might be redundant, considering the next line
                 if(findPiece(r-2,c+1)==0 || findPiece(r-2,c+1).color!=piece.color){//if the space is empty, or has enemy
-                    piece.vMoves.push(translate(''+(c+1)+(r-2)));
+                    piece.vMoves.push(translate(''+(c+1)+(r-2))); //add position to valid moves
                 }
             }
-            if(r-1>-1 && c+2<8){//this should be redundant, considering the next line
+            if(r-1>-1 && c+2<8){//
                 if(findPiece(r-1,c+2)==0 || findPiece(r-1,c+2).color!=piece.color){//if the space is empty, or has enemy
                 piece.vMoves.push(translate(''+(c+2)+(r-1)));
                 }
             }
             
-            if(r+1<8 && c+2<8){//this should be redundant, considering the next line
+            if(r+1<8 && c+2<8){//
                 if(findPiece(r+1,c+2)==0 || findPiece(r+1,c+2).color!=piece.color){//if the space is empty, or has enemy
                     piece.vMoves.push(translate(''+(c+2)+(r+1)));
                 }
             }
             
-            if(r+2<8 && c+1<8){//this should be redundant, considering the next line
+            if(r+2<8 && c+1<8){//
                 if(findPiece(r+2,c+1)==0 || findPiece(r+2,c+1).color!=piece.color){//if the space is empty, or has enemy
                     piece.vMoves.push(translate(''+(c+1)+(r+2)));
                 }
             }
-            if(r+2<8 && c-1>-1){//this should be redundant, considering the next line
+            if(r+2<8 && c-1>-1){//
                 if(findPiece(r+2,c-1)==0 || findPiece(r+2,c-1).color!=piece.color){//if the space is empty, or has enemy
                     //add it to vMoves
                     //console.log(translate(''+(c+2)+(r-1)));
                     piece.vMoves.push(translate(''+(c-1)+(r+2)));
                 }
             }
-            if(r+1<8 && c-2>-1){//this should be redundant, considering the next line
+            if(r+1<8 && c-2>-1){//
                 if(findPiece(r+1,c-2)==0 || findPiece(r+1,c-2).color!=piece.color){//if the space is empty, or has enemy
                     piece.vMoves.push(translate(''+(c-2)+(r+1)));
                 }
             }
-            if(r-1>-1 && c-2>-1){//this should be redundant, considering the next line
+            if(r-1>-1 && c-2>-1){//
                 if(findPiece(r-1,c-2)==0 || findPiece(r-1,c-2).color!=piece.color){//if the space is empty, or has enemy
                     piece.vMoves.push(translate(''+(c-2)+(r-1)));
                 }
             }
-            if(r-2>-1 && c-1>-1){//this should be redundant, considering the next line
+            if(r-2>-1 && c-1>-1){//
                 if(findPiece(r-2,c-1)==0 || findPiece(r-2,c-1).color!=piece.color){//if the space is empty, or has enemy
                     piece.vMoves.push(translate(''+(c-1)+(r-2)));
                 }
