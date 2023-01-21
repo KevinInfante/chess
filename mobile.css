@@ -30,6 +30,7 @@ img{
 div{
     font-size:0; /*the purpose of this is to remove the spaces between the buttons*/
     display: inline-block;
+    background-color: white;
 }
 .test{
   display:none;

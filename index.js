@@ -35,6 +35,7 @@ var turn="white";
 var currPiece;
 var log="";
 var editorMode=false;
+var AImode=false;
 var gameover=false;
 var grid = [
 	[],
@@ -121,11 +122,27 @@ var pieces=[aPawn, bPawn, cPawn, dPawn, ePawn, fPawn, gPawn, hPawn,
     gKnight, bKnight, BgKnight, BbKnight, hRook, aRook, BhRook, BaRook,
     fBishop, cBishop, BfBishop, BcBishop, wQueen, bQueen, wKing, bKing];
 
+if($("h1").css("color")=="rgb(255, 255, 255)"){
+    AImode=true;
+}
+
 $("#box").click(function(){
     $(this).attr("placeholder", "");
 })
 $("#submit").click(function(){ //process the input
     var input = $("#box").val();
+    if(input=="ai"){
+        editorMode=false;
+        if(AImode==true){
+            AImode=false;
+            log+="\nAI mode turned off\n";
+        }
+        else{
+            AImode=true;
+            log+="\nAI mode turned on\n";
+        }
+        $("textarea").val(log);
+    }
     if(input=="edit"){
         if(editorMode==true) {
             editorMode=false;
@@ -299,6 +316,7 @@ function movePiece(a, b, x, y){//row, col, row, col
                     if(captured.name=="King"){ //if captured piece is a king, then game over
                         str2=" captures the king on "
                         gameover=true;
+                        AImode=false;
                     }
                     else{
                         str2=" captures on ";
@@ -313,7 +331,7 @@ function movePiece(a, b, x, y){//row, col, row, col
         x=8-x;
         grid[curPiece.rows][curPiece.cols]='_';
 
-        curPiece.rows=x;
+        curPiece.rows=x; //piece is moved to new coordinates
         curPiece.cols=y;
         grid[x][y]=curPiece.icon;
         console.log(grid);
@@ -329,6 +347,9 @@ function movePiece(a, b, x, y){//row, col, row, col
                 turnNum++;
             }
             log=log+str1+b+a+str2+String.fromCharCode(y+97)+(8-x)+'\n';
+            if(turn=="black" &&AImode==true){
+                ai_move();
+            }
             if(gameover==true){
                 //log.charAt(log.length-2)="!"; //for some reason I can't get this to work
                 log+="\n   "+curPiece.color+" wins!";
@@ -572,3 +593,27 @@ function getValidMoves(piece){ //gets the valid moves of a piece, adds
     }
     console.log("valid moves are: "+piece.vMoves);
 }
+function ai_move(){//assumes turn is black when this is called
+    turn="black"
+    let temp=[]
+    //randomly select a piece, then randomly select one of its vMoves
+    for(let i=0;i<pieces.length;i++){
+        if(pieces[i].color=="white"){
+            continue; //ignore the white pieces
+        }
+        getValidMoves(pieces[i]);
+        if (pieces[i].vMoves.length!=0){
+            temp.push(pieces[i]);
+        }
+    }
+    //movePiece
+    let index=Math.floor(Math.random()*temp.length);
+    let k=Math.floor(Math.random()*(temp[index]).vMoves.length);
+    var ranMove=temp[index].vMoves[k]; //format 'e4' (col row)
+    ranMove=translate(ranMove); //expects col row, returns col row (eg '44')
+    var rCol=ranMove.charAt(0);
+    var rRow=ranMove.charAt(1);
+    movePiece(temp[index].rows,temp[index].cols,rRow,rCol);
+    //now get the col and the row
+    //turn="white"; //might be redundant
+} //note, h pawns will sometimes move to i and disappear. e.g. "black pawn moves from h5 to i4"
