@@ -23,9 +23,11 @@ ROADMAP  1/10/23
 1/20/23
 
 ✔consider: make it so log and turn don't get updated when editor mode is on
--implement checks
 (✔kinda)implement responsive screen size
--implement better ui, that explains how to play
+-implement checks
+-implement better ui, that explains how to play (+ proper game over message)
+-implement promotion, and castling (shouldn't be too hard)
+-look into the "draggable" element in html
 
 */
 var col1, col2, row1, row2;
@@ -35,7 +37,7 @@ var turn="white";
 var currPiece;
 var log="";
 var editorMode=false;
-var AImode=false;
+var AImode=true;
 var gameover=false;
 var grid = [
 	[],
