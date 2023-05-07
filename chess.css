@@ -29,6 +29,9 @@ img{
 .darksquare{
     background-color: rgb(136,0,21);
 }
+.check{
+  background-color: red;
+}
 div{
   /* background-color: ;*/
     font-size:0; /*the purpose of this is to remove the spaces between the buttons*/

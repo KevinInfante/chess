@@ -25,8 +25,11 @@ ROADMAP  1/10/23
 ✔consider: make it so log and turn don't get updated when editor mode is on
 (✔kinda)implement responsive screen size
 -implement checks
+    ✔(5/7/23): upon check, king's tile changes to red, and "check!" appears in the log. 
+    However, red tile is reverted when the ai makes a move, which happens instantaneously.
 -implement better ui, that explains how to play (+ proper game over message)
 -implement promotion, and castling (shouldn't be too hard)
+-implement limited log messages in mobile, and the option to hide them
 -look into the "draggable" element in html
 
 */
@@ -178,9 +181,12 @@ $("#submit").click(function(){ //process the input
 var boop;
 $("button").click(function(e){
     if(e.target.nodeName=="IMG"){
+        if(editorMode==true) $("button").removeClass("check");
+        console.log(e);
         boop=  $(this).attr("id");
         $(this).fadeIn(100).fadeOut(100).fadeIn(100);
         console.log(boop);
+        //$(this).addClass("check");
         //console.log($(this).attr("class"));
         moveByClick(boop);
     }
@@ -295,16 +301,16 @@ function movePiece(a, b, x, y){//row, col, row, col
             }
         }
         //the statements below replace the image from the previous square
-        if($('#'+b+a).attr("class")=="lightsquare"){
+        if($('#'+b+a).attr("class").includes("lightsquare")){
             $('#'+b+a).html("<img src=\"images/caramel.png\" alt=\"&dotsquare;\">");
         }
-        else if($('#'+b+a).attr("class")=="darksquare"){
+        else if($('#'+b+a).attr("class").includes("darksquare")){
             $('#'+b+a).html("<img src=\"images/coffee.png\" alt=\"&square;\">");
         }
-        if($('#'+y+x).attr("class")=="lightsquare"){
+        if($('#'+y+x).attr("class").includes("lightsquare")){
             $('#'+y+x).html("<img src=\"images/"+curPiece.color+'-'+curPiece.name+".png\" alt=\"&dotsquare;\">");
         }
-        else if($('#'+y+x).attr("class")=="darksquare"){
+        else if($('#'+y+x).attr("class").includes("darksquare")){
             $('#'+y+x).html("<img src=\"images/"+curPiece.color+'-'+curPiece.name+".png\" alt=\"&square;\">");
         }
 
@@ -328,6 +334,8 @@ function movePiece(a, b, x, y){//row, col, row, col
                 }
             }
         }
+        
+        $("button").removeClass("check"); //removes check highlight
 
         y=y.charCodeAt(0)-97;
         x=8-x;
@@ -337,6 +345,22 @@ function movePiece(a, b, x, y){//row, col, row, col
         curPiece.cols=y;
         grid[x][y]=curPiece.icon;
         console.log(grid);
+
+        //HANDLING CHECKS 
+        //get valid moves at new postion
+        //if one of the coordinates contains enemy king, add check class to that square
+        //handle other check stuff
+        let check = false;
+        getValidMoves(curPiece);
+        for(let i=0; i<curPiece.vMoves.length; i++){
+            let moves = curPiece.vMoves[i]; //vmoves returns strings like "e4"
+            let foundPiece = findPiece(moves.charAt(1), moves.charAt(0)); //findPiece(rows, cols)
+            if(foundPiece.name=="King" && foundPiece.color!=curPiece.color){
+                console.log("CHECK!");
+                $('#'+moves.charAt(0)+moves.charAt(1)).addClass("check");
+                check=true;
+            }
+        }
 
         if(editorMode==false){//code below changes the turn and updates the log
             if(turn=="white"){
@@ -349,6 +373,7 @@ function movePiece(a, b, x, y){//row, col, row, col
                 turnNum++;
             }
             log=log+str1+b+a+str2+String.fromCharCode(y+97)+(8-x)+'\n';
+            if(check) log=log+"   Check!\n";
             if(turn=="black" &&AImode==true){
                 ai_move();
             }
