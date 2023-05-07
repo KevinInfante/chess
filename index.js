@@ -27,6 +27,8 @@ ROADMAP  1/10/23
 -implement checks
     ✔(5/7/23): upon check, king's tile changes to red, and "check!" appears in the log. 
     However, red tile is reverted when the ai makes a move, which happens instantaneously.
+✔(5/7/23): implemented castling (I haven't error checked extensively), however castling isn't disabled after rook move
+-implement slower ai moves, ideally have the pieces visibly slide from tile to tile
 -implement better ui, that explains how to play (+ proper game over message)
 -implement promotion, and castling (shouldn't be too hard)
 -implement limited log messages in mobile, and the option to hide them
@@ -42,6 +44,7 @@ var log="";
 var editorMode=false;
 var AImode=true;
 var gameover=false;
+var whiteCanCastle=true, blackCanCastle = true;
 var grid = [
 	[],
 	[],
@@ -182,11 +185,10 @@ var boop;
 $("button").click(function(e){
     if(e.target.nodeName=="IMG"){
         if(editorMode==true) $("button").removeClass("check");
-        console.log(e);
+        //console.log(e);
         boop=  $(this).attr("id");
         $(this).fadeIn(100).fadeOut(100).fadeIn(100);
         console.log(boop);
-        //$(this).addClass("check");
         //console.log($(this).attr("class"));
         moveByClick(boop);
     }
@@ -256,6 +258,7 @@ function moveByClick(id){
             }
         console.log(curPiece.color);
         getValidMoves(curPiece);
+        console.log("valid moves are: "+curPiece.vMoves)
         toggleHighLight(curPiece);
         col1=id.charAt(0);
         row1=id.charAt(1);
@@ -337,6 +340,45 @@ function movePiece(a, b, x, y){//row, col, row, col
         
         $("button").removeClass("check"); //removes check highlight
 
+        if(curPiece.name=="King"){ //if the king moves, than he can no longer castle
+            if(curPiece.color=="white" && whiteCanCastle==true){
+                if(x==1 && y=='g'){ //if destination is right castle square(assuming it's already in vMoves) and canCastle ==true
+                    //shift rook
+                    //when adding the valid move, it should have already checked if there's an allied rook on the h1 square
+                    if(editorMode) movePiece(1, 'h', 1, 'f');
+                    else{
+                    editorMode=true;
+                    movePiece(1, 'h', 1, 'f'); //shifts the rook
+                    editorMode=false;}
+                }
+                if(x==1 && y=='c'){ //if destination is left castle square(assuming it's already in vMoves) and canCastle ==true
+                    if(editorMode) movePiece(1, 'a', 1, 'd');
+                    else{
+                    editorMode=true;
+                    movePiece(1, 'a', 1, 'd'); //shifts the rook
+                    editorMode=false;}
+                }
+                whiteCanCastle = false;
+            }
+            else if(curPiece.color=="black" && blackCanCastle == true){
+                if(x==8 && y=='g'){ //if destination is right castle square(assuming it's already in vMoves) and canCastle ==true
+                    if(editorMode) movePiece(8, 'h', 8, 'f');
+                    else
+                    {  editorMode=true;
+                    movePiece(8, 'h', 8, 'f'); //shifts the rook
+                    editorMode=false;  }
+                }
+                if(x==8 && y=='c'){ //if destination is left castle square(assuming it's already in vMoves) and canCastle ==true
+                    if(editorMode) movePiece(8, 'a', 8, 'd');
+                    else{
+                    editorMode=true;
+                    movePiece(8, 'a', 8, 'd'); //shifts the rook
+                    editorMode=false;}
+                }
+                blackCanCastle=false;
+            }
+        }
+
         y=y.charCodeAt(0)-97;
         x=8-x;
         grid[curPiece.rows][curPiece.cols]='_';
@@ -345,6 +387,10 @@ function movePiece(a, b, x, y){//row, col, row, col
         curPiece.cols=y;
         grid[x][y]=curPiece.icon;
         console.log(grid);
+
+        console.log("white castle: "+whiteCanCastle);
+        console.log("black castle: "+blackCanCastle);
+        //handle castle conditions if rooks move
 
         //HANDLING CHECKS 
         //get valid moves at new postion
@@ -616,9 +662,37 @@ function getValidMoves(piece){ //gets the valid moves of a piece, adds
             }
             if((findPiece((r-1),c-1)!=-1) && findPiece((r-1),c-1).color!=piece.color){
                 piece.vMoves.push(translate(''+(c-1)+(r-1)));
-            }  
+            }
+            //check 2 squares to the right, check right rook
+            if(piece.color=="white" && (row==1 && col =='e') || piece.color=="black" && (row==8 && col =='e')){
+                //^ if either king is in initial position
+                if((findPiece(r, c+1)==0) && (findPiece(r, c+2)==0) && 
+                ((findPiece(r, c+3).name=="Rook") && (findPiece(r, c+3).color==piece.color)) ){
+                    //^if 2 spaces to the right are empty and 3rd space to the right contains allied rook
+                    if(piece.color=="white" && whiteCanCastle==true){
+                        piece.vMoves.push("g1");
+                    }
+                    if(piece.color=="black" && blackCanCastle==true){
+                        piece.vMoves.push("g8");
+                    }
+                }
+            }
+            //check 3 squares to the left, check left rook
+            if(piece.color=="white" && (row==1 && col =='e') || piece.color=="black" && (row==8 && col =='e')){
+                //^ if either king is in initial position
+                if((findPiece(r, c-1)==0) && (findPiece(r, c-2)==0) && (findPiece(r, c-3)==0) &&
+                ((findPiece(r, c-4).name=="Rook") && (findPiece(r, c-4).color==piece.color)) ){
+                    if(piece.color=="white" && whiteCanCastle==true){
+                        piece.vMoves.push("c1");
+                    }
+                    if(piece.color=="black" && blackCanCastle==true){
+                        piece.vMoves.push("c8");
+                    }
+                }
+            }
     }
-    console.log("valid moves are: "+piece.vMoves);
+    //if(turn!="black" || AImode==false)
+    //console.log("valid moves are: "+piece.vMoves);
 }
 function ai_move(){//assumes turn is black when this is called
     turn="black"
