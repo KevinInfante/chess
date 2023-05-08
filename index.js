@@ -309,26 +309,24 @@ function movePiece(a, b, x, y){//row, col, row, col
         oldleft = $("#"+b+a).offset().left;
         newtop = $("#"+y+x).offset().top;
         newleft = $("#"+y+x).offset().left;
+        let a1offset=$("#a1").offset().left;
 
         //the statements below replace the image from the previous square
         if($('#'+b+a).attr("class").includes("lightsquare")){
             $('#'+b+a).html("<img src=\"images/caramel.png\" alt=\"&dotsquare;\">");
-            $('#'+b+a).append("<div class=\""+b+a+"\" style=\"position: absolute; left:"+(oldleft-112.4)+"px; height: 50px; width: 50px; \"> <img src=\"images/"+curPiece.color+'-'+curPiece.name+".png\"> </div>")
-            $("."+b+a).animate({top: "-="+top+"px", left: "-="+left+"px"}, "fast", function(){
-                console.log(("function called"));
-                
-                let tim = () => {$("."+b+a).remove();}
-                setTimeout(tim, 400);
-            });
+            $('#'+b+a).append("<div class=\""+b+a+"\" style=\"background:transparent; position: absolute; transition: left 0.2s ease-out, top 0.2s ease-out; height: 50px; width: 50px; \"> <img src=\"images/"+curPiece.color+'-'+curPiece.name+".png\"> </div>")
+            $("."+b+a).offset({top: oldtop, left: oldleft})
+            $("."+b+a).offset({top: newtop, left: newleft})
+            let tim = () => {$("."+b+a).remove();}
+            setTimeout(tim, 400);
         }
         else if($('#'+b+a).attr("class").includes("darksquare")){
             $('#'+b+a).html("<img src=\"images/coffee.png\" alt=\"&square;\">");
-            $('#'+b+a).append("<div class=\""+b+a+"\" style=\"position: absolute; left:"+(oldleft-112.4)+"px; height: 50px; width: 50px; \"> <img src=\"images/"+curPiece.color+'-'+curPiece.name+".png\"> </div>")
-            $("."+b+a).animate({top: "-="+top+"px", left: "-="+left+"px"}, "fast", function(){
-                console.log(("function called"));
-                let tim = () => {$("."+b+a).remove();}
-                setTimeout(tim, 400);
-            });
+            $('#'+b+a).append("<div class=\""+b+a+"\" style=\"background:transparent; position: absolute; transition: left 0.2s ease-out, top 0.2s ease-out; height: 50px; width: 50px; \"> <img src=\"images/"+curPiece.color+'-'+curPiece.name+".png\"> </div>")
+            $("."+b+a).offset({top: oldtop, left: oldleft})
+            $("."+b+a).offset({top: newtop, left: newleft})
+            let tim = () => {$("."+b+a).remove();}
+            setTimeout(tim, 400);
         }
         let futureY=y;
         let futureX=x;
@@ -339,7 +337,6 @@ function movePiece(a, b, x, y){//row, col, row, col
             },400)
         }
         else if($('#'+y+x).attr("class").includes("darksquare")){
-
             setTimeout(function(){
                 $('#'+futureY+futureX).html("<img src=\"images/"+curPiece.color+'-'+curPiece.name+".png\" alt=\"&square;\">");
             },400)
