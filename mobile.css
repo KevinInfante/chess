@@ -5,8 +5,14 @@ body{
     text-align: center;
 }
 h1{
-    color:white;
+  color:white;
+  margin-bottom: 5px; /*added this for the game over message*/
 }
+h3{
+ color:white;
+ margin-top:5px; /*added to appear below the title */
+}
+
 button{ 
     font-size: inherit;/*the purpose of this is to remove the spaces between the buttons*/
     margin:0;

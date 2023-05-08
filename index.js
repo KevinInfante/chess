@@ -4,14 +4,10 @@ ROADMAP  1/10/23
 ✔objects implemented
 ✔have a function that changes the coordinates of the pieces, and updates the grid
 ✔incorporate input from the user
-   -caveat here, I removed the 'piece' parameter from MovePiece(). This may make 
-   things weird, as this is not how I implemeneted it in the other project.
-   I should consider something like a "findPiece" function that takes the for
-   loop with the coordinates and returns the Piece assocate with them.
 ✔I think I should go ahead an try to implement the html and css, before doing
   the valid moves
 ✔incorporate the logic of the "valid moves" for each piece
-    I'm thinking that getValidMoves could a function, or method function of Piece,
+    I'm thinking that getValidMoves could be a function, or method function of Piece,
     that returns an array of the (coordinates of) valid moves.
     -this function will be triggered when the first position is clicked (or
     after reading the coordinates of the first input), then the second pair of
@@ -24,6 +20,7 @@ ROADMAP  1/10/23
 
 ✔consider: make it so log and turn don't get updated when editor mode is on
 (✔kinda)implement responsive screen size
+******BACK FROM HIATUS**********
 -implement checks
     ✔(5/7/23): upon check, king's tile changes to red, and "check!" appears in the log. 
     However, red tile is reverted when the ai makes a move, which happens instantaneously.
@@ -311,10 +308,12 @@ function movePiece(a, b, x, y){//row, col, row, col
         newleft = $("#"+y+x).offset().left;
         let a1offset=$("#a1").offset().left;
 
-        //the statements below replace the image from the previous square
+        //the statements below replace the image from the previous square, manage the animations
         if($('#'+b+a).attr("class").includes("lightsquare")){
             $('#'+b+a).html("<img src=\"images/caramel.png\" alt=\"&dotsquare;\">");
-            $('#'+b+a).append("<div class=\""+b+a+"\" style=\"background:transparent; position: absolute; transition: left 0.2s ease-out, top 0.2s ease-out; height: 50px; width: 50px; \"> <img src=\"images/"+curPiece.color+'-'+curPiece.name+".png\"> </div>")
+            $('#'+b+a).append("<div class=\""+b+a+"\" style=\"background:transparent; position: absolute; transition:"+ 
+            "left 0.2s ease-out, top 0.2s ease-out; height: 50px; width: 50px; \"> <img src=\"images/"+curPiece.color+
+            '-'+curPiece.name+".png\"> </div>")
             $("."+b+a).offset({top: oldtop, left: oldleft})
             $("."+b+a).offset({top: newtop, left: newleft})
             let tim = () => {$("."+b+a).remove();}
@@ -322,7 +321,9 @@ function movePiece(a, b, x, y){//row, col, row, col
         }
         else if($('#'+b+a).attr("class").includes("darksquare")){
             $('#'+b+a).html("<img src=\"images/coffee.png\" alt=\"&square;\">");
-            $('#'+b+a).append("<div class=\""+b+a+"\" style=\"background:transparent; position: absolute; transition: left 0.2s ease-out, top 0.2s ease-out; height: 50px; width: 50px; \"> <img src=\"images/"+curPiece.color+'-'+curPiece.name+".png\"> </div>")
+            $('#'+b+a).append("<div class=\""+b+a+"\" style=\"background:transparent; position: absolute; transition:"+
+            " left 0.2s ease-out, top 0.2s ease-out; height: 50px; width: 50px; \"> <img src=\"images/"+curPiece.color+
+            '-'+curPiece.name+".png\"> </div>")
             $("."+b+a).offset({top: oldtop, left: oldleft})
             $("."+b+a).offset({top: newtop, left: newleft})
             let tim = () => {$("."+b+a).remove();}
@@ -332,7 +333,6 @@ function movePiece(a, b, x, y){//row, col, row, col
         let futureX=x;
         if($('#'+y+x).attr("class").includes("lightsquare")){
             setTimeout(function(){
-                console.log("time called");
                 $('#'+futureY+futureX).html("<img src=\"images/"+curPiece.color+'-'+curPiece.name+".png\" alt=\"&dotsquare;\">");
             },400)
         }
@@ -430,6 +430,10 @@ function movePiece(a, b, x, y){//row, col, row, col
                 console.log("CHECK!");
                 $('#'+moves.charAt(0)+moves.charAt(1)).addClass("check");
                 check=true;
+                $("#msg").html("<span style=\"color:red\">Check</span>"); //changes the h3 msg to display check
+                setTimeout(() => {
+                    $("#msg").html("<br>"); 
+                }, 1000);
             }
         }
 
@@ -451,6 +455,7 @@ function movePiece(a, b, x, y){//row, col, row, col
             if(gameover==true){
                 //log.charAt(log.length-2)="!"; //for some reason I can't get this to work
                 log+="\n   "+curPiece.color+" wins!";
+                $("#msg").html("Game Over, "+curPiece.color+" wins!")
             }
             $("textarea").val(log); //consider changing the line hight of texarea
             $("textarea").scrollTop($("textarea")[0].scrollHeight);

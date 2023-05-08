@@ -1,7 +1,15 @@
 body{
     margin: 5% 10%; /*top/bottom, left/right*/
-    background-color: white;
+    background-color: white; /*blanchedalmond is also good*/
     font-family:"Verdana", sans-serif;
+}
+h1{
+  margin-bottom:0;
+}
+#msg{
+  position:absolute;
+  left:10%;
+  top:13%;
 }
 button{ 
     /* size: 50pt; */
@@ -43,13 +51,13 @@ div{
   height: 400px;
   position: absolute;
   right: 0%; /*edited start*/
-  top:19%; /*edited*/
+  top:20%; /*edited*/
 }
 
 .board{               /*edited*/
   position:absolute;
   left: 10%;
-  top:19%
+  top:20%
   
 }
 
