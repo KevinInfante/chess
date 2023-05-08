@@ -28,7 +28,7 @@ ROADMAP  1/10/23
     ✔(5/7/23): upon check, king's tile changes to red, and "check!" appears in the log. 
     However, red tile is reverted when the ai makes a move, which happens instantaneously.
 ✔(5/7/23): implemented castling (I haven't error checked extensively), however castling isn't disabled after rook move
--implement slower ai moves, ideally have the pieces visibly slide from tile to tile
+✔(5/7/23): implement slower ai moves, ideally have the pieces visibly slide from tile to tile
 -implement better ui, that explains how to play (+ proper game over message)
 -implement promotion, and castling (shouldn't be too hard)
 -implement limited log messages in mobile, and the option to hide them
@@ -303,18 +303,46 @@ function movePiece(a, b, x, y){//row, col, row, col
                 return;
             }
         }
+        let top = $("#"+b+a).offset().top - $("#"+y+x).offset().top
+        let left = $("#"+b+a).offset().left - $("#"+y+x).offset().left
+        oldtop = $("#"+b+a).offset().top;
+        oldleft = $("#"+b+a).offset().left;
+        newtop = $("#"+y+x).offset().top;
+        newleft = $("#"+y+x).offset().left;
+
         //the statements below replace the image from the previous square
         if($('#'+b+a).attr("class").includes("lightsquare")){
             $('#'+b+a).html("<img src=\"images/caramel.png\" alt=\"&dotsquare;\">");
+            $('#'+b+a).append("<div class=\""+b+a+"\" style=\"position: absolute; left:"+(oldleft-112.4)+"px; height: 50px; width: 50px; \"> <img src=\"images/"+curPiece.color+'-'+curPiece.name+".png\"> </div>")
+            $("."+b+a).animate({top: "-="+top+"px", left: "-="+left+"px"}, "fast", function(){
+                console.log(("function called"));
+                
+                let tim = () => {$("."+b+a).remove();}
+                setTimeout(tim, 400);
+            });
         }
         else if($('#'+b+a).attr("class").includes("darksquare")){
             $('#'+b+a).html("<img src=\"images/coffee.png\" alt=\"&square;\">");
+            $('#'+b+a).append("<div class=\""+b+a+"\" style=\"position: absolute; left:"+(oldleft-112.4)+"px; height: 50px; width: 50px; \"> <img src=\"images/"+curPiece.color+'-'+curPiece.name+".png\"> </div>")
+            $("."+b+a).animate({top: "-="+top+"px", left: "-="+left+"px"}, "fast", function(){
+                console.log(("function called"));
+                let tim = () => {$("."+b+a).remove();}
+                setTimeout(tim, 400);
+            });
         }
+        let futureY=y;
+        let futureX=x;
         if($('#'+y+x).attr("class").includes("lightsquare")){
-            $('#'+y+x).html("<img src=\"images/"+curPiece.color+'-'+curPiece.name+".png\" alt=\"&dotsquare;\">");
+            setTimeout(function(){
+                console.log("time called");
+                $('#'+futureY+futureX).html("<img src=\"images/"+curPiece.color+'-'+curPiece.name+".png\" alt=\"&dotsquare;\">");
+            },400)
         }
         else if($('#'+y+x).attr("class").includes("darksquare")){
-            $('#'+y+x).html("<img src=\"images/"+curPiece.color+'-'+curPiece.name+".png\" alt=\"&square;\">");
+
+            setTimeout(function(){
+                $('#'+futureY+futureX).html("<img src=\"images/"+curPiece.color+'-'+curPiece.name+".png\" alt=\"&square;\">");
+            },400)
         }
 
         //the statements below check if there is already a piece on (x, y), then captures
@@ -421,7 +449,7 @@ function movePiece(a, b, x, y){//row, col, row, col
             log=log+str1+b+a+str2+String.fromCharCode(y+97)+(8-x)+'\n';
             if(check) log=log+"   Check!\n";
             if(turn=="black" &&AImode==true){
-                ai_move();
+                setTimeout(function(){ai_move();},400);
             }
             if(gameover==true){
                 //log.charAt(log.length-2)="!"; //for some reason I can't get this to work
