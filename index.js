@@ -27,7 +27,8 @@ ROADMAP  1/10/23
 ✔(5/7/23): implemented castling (I haven't error checked extensively), however castling isn't disabled after rook move
 ✔(5/7/23): implement slower ai moves, ideally have the pieces visibly slide from tile to tile
 -implement better ui, that explains how to play (+ proper game over message)
--implement promotion, and castling (shouldn't be too hard)
+✔(5/8/23): implement promotion, and castling (shouldn't be too hard)
+    implemented with a caveat, pawns automatically promote to queen.
 -implement limited log messages in mobile, and the option to hide them
 -look into the "draggable" element in html
 
@@ -300,13 +301,10 @@ function movePiece(a, b, x, y){//row, col, row, col
                 return;
             }
         }
-        let top = $("#"+b+a).offset().top - $("#"+y+x).offset().top
-        let left = $("#"+b+a).offset().left - $("#"+y+x).offset().left
         oldtop = $("#"+b+a).offset().top;
         oldleft = $("#"+b+a).offset().left;
         newtop = $("#"+y+x).offset().top;
         newleft = $("#"+y+x).offset().left;
-        let a1offset=$("#a1").offset().left;
 
         //the statements below replace the image from the previous square, manage the animations
         if($('#'+b+a).attr("class").includes("lightsquare")){
@@ -365,6 +363,7 @@ function movePiece(a, b, x, y){//row, col, row, col
         
         $("button").removeClass("check"); //removes check highlight
 
+        //if statements below handle castling
         if(curPiece.name=="King"){ //if the king moves, than he can no longer castle
             if(curPiece.color=="white" && whiteCanCastle==true){
                 if(x==1 && y=='g'){ //if destination is right castle square(assuming it's already in vMoves) and canCastle ==true
@@ -402,6 +401,15 @@ function movePiece(a, b, x, y){//row, col, row, col
                 }
                 blackCanCastle=false;
             }
+        }
+        //Pawn promotion, for the moment, pawns automatically promote to queen
+        if(curPiece.name=="Pawn" && (x==1 || x==8)){ //if the current piece is a pawn & its destination is first or last row
+            curPiece.name="Queen";
+            curPiece.icon="W";
+            if($('#'+y+x).attr("class").includes("lightsquare"))
+                $('#'+futureY+futureX).html("<img src=\"images/"+curPiece.color+'-'+"Queen.png\" alt=\"&dotsquare;\">");
+            else if($('#'+y+x).attr("class").includes("darksquare"))
+                $('#'+futureY+futureX).html("<img src=\"images/"+curPiece.color+'-'+"Queen.png\" alt=\"&square;\">");
         }
 
         y=y.charCodeAt(0)-97;
